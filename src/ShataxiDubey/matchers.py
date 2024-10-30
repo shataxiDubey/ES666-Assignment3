@@ -13,26 +13,26 @@ class matchers:
 	def match(self, i1, i2, direction=None):
 		imageSet1 = self.getSIFTFeatures(i1)
 		imageSet2 = self.getSIFTFeatures(i2)
-		print("Direction : ", direction)
-		matches = self.flann.knnMatch(
-			imageSet2['des'],
-			imageSet1['des'],
-			k=2
-			)
-		good = []
-		for i , (m, n) in enumerate(matches):
-			if m.distance < 0.7*n.distance:
-				good.append((m.trainIdx, m.queryIdx))
 
-		if len(good) > 4:
+		bf = cv2.BFMatcher()
+		rawMatches = bf.knnMatch(imageSet2['des'], imageSet1['des'], 2)
+		# print(f'rawmatches {type(rawMatches)}, {len(rawMatches[0])}, {rawMatches[0]}')
+		matches = []
+		for m,n in rawMatches:
+			if m.distance < 0.75*n.distance:
+				matches.append((m.trainIdx, m.queryIdx))
+
+		print("Direction : ", direction)
+
+		if len(matches) > 4:
 			pointsCurrent = imageSet2['kp']
 			pointsPrevious = imageSet1['kp']
 
 			matchedPointsCurrent = np.float32(
-				[pointsCurrent[i].pt for (__, i) in good]
+				[pointsCurrent[i].pt for (__, i) in matches]
 			)
 			matchedPointsPrev = np.float32(
-				[pointsPrevious[i].pt for (i, __) in good]
+				[pointsPrevious[i].pt for (i, __) in matches]
 				)
 			
 			H = self.homography_matrix_with_ransac(matchedPointsCurrent, matchedPointsPrev)

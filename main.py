@@ -14,13 +14,13 @@ path = 'Images{}*'.format(os.sep)  # Use os.sep, Windows, linux have different p
 
 all_submissions = glob.glob('./src/*')
 os.makedirs('./results/', exist_ok=True)
-# for idx,algo in enumerate(all_submissions[:-1]):
-for idx,algo in enumerate(all_submissions):
+for idx,algo in enumerate(all_submissions[-1:]):
+# for idx,algo in enumerate(all_submissions):
     print('****************\tRunning Awesome Stitcher developed by: {}  | {} of {}\t********************'.format(algo.split(os.sep)[-1],idx,len(all_submissions)))
     try:
         module_name = '{}_{}'.format(algo.split(os.sep)[-1],'stitcher')
-        filepath = '{}{}stitcher.py'.format( algo,os.sep,'stitcher.py')
-        # filepath = 'C:\shataxi\MTech\ES666_Computer_Vision\ES666-Assignment3\src\ShataxiDubey\stitcher_copy.py'
+        # filepath = '{}{}stitcher.py'.format( algo,os.sep,'stitcher.py')
+        filepath = 'C:\shataxi\MTech\ES666_Computer_Vision\ES666-Assignment3\src\ShataxiDubey\stitcher.py'
         spec = importlib.util.spec_from_file_location(module_name, filepath)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -28,8 +28,8 @@ for idx,algo in enumerate(all_submissions):
         inst = PanaromaStitcher()
 
         ###
-        # for impaths in glob.glob(path)[1:2]:
-        for impaths in glob.glob(path):
+        for impaths in glob.glob(path)[5:6]:
+        # for impaths in glob.glob(path):
             print('\t\t Processing... {}'.format(impaths))
             stitched_image, homography_matrix_list = inst.make_panaroma_for_images_in(path=impaths)
 
