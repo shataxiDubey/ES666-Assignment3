@@ -29,7 +29,7 @@ class PanaromaStitcher:
 	def leftshift(self):
 		# here we are shifting everything by offset because we want the coordinates to lie in positive coordinate system
 		# also offset is also added in the final canvas size so that stitched images can be accomodated
-		# self.left_list = reversed(self.left_list)
+
 		a = self.left_list[0]
 		for b in self.left_list[1:]:
 			H = self.matcher_obj.match(a, b, 'left')
