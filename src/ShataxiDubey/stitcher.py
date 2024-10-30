@@ -31,7 +31,6 @@ class PanaromaStitcher:
 		# also offset is also added in the final canvas size so that stitched images can be accomodated
 		# self.left_list = reversed(self.left_list)
 		a = self.left_list[0]
-		print(f'Shape of a: {a.shape}')
 		for b in self.left_list[1:]:
 			H = self.matcher_obj.match(a, b, 'left')
 			self.homography_matrix_list.append(H)
@@ -40,19 +39,16 @@ class PanaromaStitcher:
 			print("Inverse Homography :", xh)
 			ds = np.dot(xh, np.array([a.shape[1], a.shape[0], 1]));
 			ds = ds/ds[-1]
-			print("final ds=>", ds)
 			f1 = np.dot(xh, np.array([0,0,1]))
 			f1 = f1/f1[-1]
-			print(f'f1 {f1}')
 			xh[0][-1] += abs(f1[0])
 			xh[1][-1] += abs(f1[1])
 			ds = np.dot(xh, np.array([a.shape[1], a.shape[0], 1]))
-			print("final ds=>", ds, np.dot(xh, np.array([0,0,1])))
+			print("final ds after transaltion=>", ds, np.dot(xh, np.array([0,0,1])))
 			offsety = abs(int(f1[1]))
 			offsetx = abs(int(f1[0]))
 			dsize = (int(ds[0])+offsetx, int(ds[1]) + offsety)
-			print("final dsize=>", dsize)
-			print("image dsize =>", dsize)
+			print("canvas dsize =>", dsize)
 			tmp = cv2.warpPerspective(a, xh, dsize)
 			tmp[offsety:b.shape[0]+offsety, offsetx:b.shape[1]+offsetx] = b
 			a = tmp
@@ -71,37 +67,18 @@ class PanaromaStitcher:
 			tmp = cv2.warpPerspective(each, H, dsize)
 			tmp = self.mix_and_match(self.leftImage, tmp)
 			print("tmp shape",tmp.shape)
-			print("self.leftimage shape=", self.leftImage.shape)
 			self.leftImage = tmp
 		
 
-
-
 	def mix_and_match(self, leftImage, warpedImage):
 		i1y, i1x = leftImage.shape[:2]
-		i2y, i2x = warpedImage.shape[:2]
-		print( leftImage[-1,-1])
-
-		t = time.time()
-		black_l = np.where(leftImage == np.array([0,0,0]))
-		black_wi = np.where(warpedImage == np.array([0,0,0]))
-		print( time.time() - t)
-		print( black_l[-1])
-
 		for i in range(0, i1x):
 			for j in range(0, i1y):
-				try:
-					if(np.array_equal(leftImage[j,i],np.array([0,0,0])) and  np.array_equal(warpedImage[j,i],np.array([0,0,0]))):
-						warpedImage[j,i] = [0, 0, 0]
-					else:
-						if(np.array_equal(warpedImage[j,i],[0,0,0])):
-							warpedImage[j,i] = leftImage[j,i]
-						else:
-							if not np.array_equal(leftImage[j,i], [0,0,0]):
-								bl,gl,rl = leftImage[j,i]
-								warpedImage[j, i] = [bl,gl,rl]
-				except:
-					pass
+				# when both warped and reference image have black pixels then warp image will also have black pixel
+				if(np.array_equal(leftImage[j,i],np.array([0,0,0])) and  np.array_equal(warpedImage[j,i],np.array([0,0,0]))):
+					warpedImage[j,i] = [0, 0, 0]
+				else: # when reference image have non black pixel then add non black pixel in the warped image
+					warpedImage[j, i] = leftImage[j,i]
 		return warpedImage
 	
 	
