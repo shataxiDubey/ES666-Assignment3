@@ -162,3 +162,12 @@ cython_debug/
 #.idea/
 
 results/
+src/ShataxiDubey/stitcher_scratch.py
+src/ShataxiDubey/warping.py
+src/ShataxiDubey/__pycache__
+0.png
+1.png
+2.png
+3.png
+shataxi_keypoints_matching.png
+shataxi_sift_keypoints.jpg
