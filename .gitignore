@@ -165,6 +165,7 @@ results/
 src/ShataxiDubey/stitcher_scratch.py
 src/ShataxiDubey/warping.py
 src/ShataxiDubey/__pycache__
+src/ShataxiDubey/shataxi_keypoints_matching_inliers.png
 0.png
 1.png
 2.png
